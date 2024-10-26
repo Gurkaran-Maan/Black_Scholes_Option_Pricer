@@ -1,11 +1,18 @@
 from BlackScholes import BlackScholesModel
+from StockData import StockData
 
 ## convert to OOP
 
 if __name__ == "__main__":
     option_type = input("Option Type: ")
     
-    S = float(input("Enter Share Price: "))
+    ticker = input("Enter Stock Ticker Symbol: ")
+    
+    stock_data = StockData()
+    S = stock_data.get_stock_price(ticker)
+    
+    
+    #float(input("Enter Share Price: "))
     E = float(input("Enter Exercise Price: "))
     T = float(input("Enter time to expiry in years: "))
     V = float(input("Enter Volatility: "))

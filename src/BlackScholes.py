@@ -17,9 +17,11 @@ class BlackScholesModel:
         d1 = (math.log(self.S/self.E) + ((self.r - self.div_yield + (self.vol**2)/2) * self.T)) / (self.vol * math.sqrt(self.T))
         d2 = d1 - (self.vol * math.sqrt(self.T))
         
-        if self.option_type == "Call":
+        if self.option_type.lower() == "call":
             c = (self.S * math.exp(-self.div_yield*self.T) * norm.cdf(d1)) - (self.E * math.exp(-self.r * self.T) * norm.cdf(d2))
             return c
-        else:
+        elif self.option_type.lower() == "put":
             p = (self.E * math.exp(-self.r * self.T) * norm.cdf(-d2)) - (self.S * math.exp(-self.div_yield * self.T) * (norm.cdf(-d1)))
             return p
+        else:
+            return -1
