@@ -18,3 +18,13 @@ class StockData():
         ticker = yf.Ticker(ticker)
         
         return ticker.history(period="1d", interval="1m").iloc[-1]['Close']
+    
+    def is_valid_ticker(self, ticker):
+        try:
+            stock = yf.Ticker(ticker)
+            # Check if the ticker has historical market data
+            if stock.history(period="1d").empty:
+                return False  # No data means the ticker is likely invalid
+            return True
+        except Exception as e:
+            return False  # Any exception implies the ticker is invalid
