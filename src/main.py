@@ -1,36 +1,45 @@
 from BlackScholes import BlackScholesModel
 from StockData import StockData
-
-## convert to OOP
+import streamlit as st 
+import numpy as np
+import matplotlib.pyplot as plt
 
 class App:
     def __init__(self):
         return
 
     def run(self):
-        option_type = input("Option Type: ")
+        st.title("Black-Scholes Option Pricing Dashboard")
         
-        self.validate_option_type(option_type)
-        
-        ticker = input("Enter Stock Ticker Symbol: ")
+        st.sidebar.header("Input Parameters")
+        stock_ticker = st.sidebar.text_input("Stock Ticker", placeholder="AAPL")
+        option_type = st.sidebar.radio("Option Type", ["Call", "Put"])
+        exercise_price = st.sidebar.slider("Exercise Price", 0.0, 500.0, 100.0, 1.0)
+        time_to_maturity = st.sidebar.slider("Time To Maturity(Years)", 0.1, 2.0, 1.0, 0.1)
+        risk_free_rate = st.sidebar.slider("Risk Free Rate(%)", 0, 10, 5, 1)
+        volatility = st.sidebar.slider("Volatility(%)", 0, 100, 20, 1)
+        div_yield = st.sidebar.slider("Dividend Yield(%)", 0, 20, 5, 1)
         
         stock_data = StockData()
         
-        self.validate_stock_ticker(stock_data, ticker)
+        self.validate_stock_ticker(stock_data, stock_ticker)
         
-        S = stock_data.get_stock_price(ticker)
+        S = stock_data.get_stock_price(stock_ticker)
         
-        #float(input("Enter Share Price: "))
-        E = input("Enter Exercise Price: ")
-        T = input("Enter time to expiry in years: ")
-        V = input("Enter Volatility: ")
-        r = input("Enter the risk free interest rate: ")
-        div_yield = input("Enter the dividend yield: ")
+        st.write("You have selected the following parameters:")
+        st.write(f"Stock Ticker: {stock_ticker}")
+        st.write(f"Stock Price: {S}")
+        st.write(f"Option Type: {option_type}")
+        st.write(f"Exercise Price: {exercise_price}")
+        st.write(f"Time To Maturity: {time_to_maturity}")
+        st.write(f"Risk Free Rate: {risk_free_rate}")
+        st.write(f"Volatility: {volatility}")
+        st.write(f"Dividend Yield: {div_yield}")
         
-        E, T, V, r, div_yield = self.validate_numerical_input([E, T, V, r, div_yield])
+        model = BlackScholesModel(S, exercise_price, volatility/100, time_to_maturity, risk_free_rate/100, div_yield=div_yield/100, option_type=option_type)
+        st.write(f"The {option_type} Option Price is: ${model.option_value()}")
         
-        model = BlackScholesModel(S, E, V, T, r, div_yield=div_yield, option_type=option_type)
-        print(model.option_value())
+        # st.pyplot(plt)
         
     def validate_numerical_input(self, inputs):
         outputs = []
