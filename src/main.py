@@ -7,39 +7,98 @@ import matplotlib.pyplot as plt
 class App:
     def __init__(self):
         return
-
+    
     def run(self):
-        st.title("Black-Scholes Option Pricing Dashboard")
+        # Set page layout
+        st.set_page_config(page_title="Black-Scholes Dashboard", layout="wide")
         
-        st.sidebar.header("Input Parameters")
-        stock_ticker = st.sidebar.text_input("Stock Ticker", placeholder="AAPL")
-        option_type = st.sidebar.radio("Option Type", ["Call", "Put"])
-        exercise_price = st.sidebar.slider("Exercise Price", 0.0, 500.0, 100.0, 1.0)
-        time_to_maturity = st.sidebar.slider("Time To Maturity(Years)", 0.1, 2.0, 1.0, 0.1)
-        risk_free_rate = st.sidebar.slider("Risk Free Rate(%)", 0, 10, 5, 1)
-        volatility = st.sidebar.slider("Volatility(%)", 0, 100, 20, 1)
-        div_yield = st.sidebar.slider("Dividend Yield(%)", 0, 20, 5, 1)
+        # Define two columns for main content and the "sidebar"
+        main_col, sidebar_col = st.columns([3, 1]) 
         
+        with main_col:
+            # Title Styling
+            st.title("📈 Black-Scholes Option Pricing Dashboard")
+        
+        with sidebar_col:
+            # Sidebar Input Styling
+            st.header("Input Parameters")
+            stock_ticker = st.text_input("Stock Ticker", placeholder="e.g., AAPL")
+            option_type = st.radio("Option Type", ["Call", "Put"])
+            exercise_price = st.slider("Exercise Price ($)", 0.0, 500.0, 100.0, 1.0)
+            time_to_maturity = st.slider("Time To Maturity (Years)", 0.1, 2.0, 1.0, 0.1)
+            risk_free_rate = st.slider("Risk-Free Rate (%)", 0.0, 10.0, 5.0, 0.25)
+            volatility = st.slider("Volatility (%)", 0, 100, 20, 1)
+            div_yield = st.slider("Dividend Yield (%)", 0, 20, 5, 1)
+        
+        # Validate and Fetch Stock Data
         stock_data = StockData()
-        
         self.validate_stock_ticker(stock_data, stock_ticker)
-        
         S = stock_data.get_stock_price(stock_ticker)
         
-        st.write("You have selected the following parameters:")
-        st.write(f"Stock Ticker: {stock_ticker}")
-        st.write(f"Stock Price: {S}")
-        st.write(f"Option Type: {option_type}")
-        st.write(f"Exercise Price: {exercise_price}")
-        st.write(f"Time To Maturity: {time_to_maturity}")
-        st.write(f"Risk Free Rate: {risk_free_rate}")
-        st.write(f"Volatility: {volatility}")
-        st.write(f"Dividend Yield: {div_yield}")
+        # Black-Scholes Model Calculation
+        model = BlackScholesModel(
+            S, exercise_price, volatility / 100, time_to_maturity, risk_free_rate / 100, div_yield=div_yield / 100, option_type=option_type
+        )
+        greeks = model.calculate_greeks()
+        option_price = model.option_value()
+
+        with main_col:
+            # Display Stock Price
+            st.subheader(f"📊 {stock_ticker.upper()} Live Price: ${S:.2f}")
+
+            # Display Results in Cards
+            st.markdown("### Option Pricing Results")
+            st.info(f"**The {option_type} Option Price:** ${option_price:.2f}")
+            
+            # Expandable Section for Greeks
+            with st.expander("View Option Greeks"):
+                st.write(f"**Delta:** {greeks['Delta']:.4f}")
+                st.write(f"**Gamma:** {greeks['Gamma']:.4f}")
+                st.write(f"**Theta:** {greeks['Theta']:.4f}")
+                st.write(f"**Vega:** {greeks['Vega']:.4f}")
+                st.write(f"**Rho:** {greeks['Rho']:.4f}")
+
+
+
+
+    # def run(self):
+    #     st.title("Black-Scholes Option Pricing Dashboard")
+    #     st.sidebar.header("Input Parameters")
+    #     stock_ticker = st.sidebar.text_input("Stock Ticker", placeholder="AAPL")
+    #     option_type = st.sidebar.radio("Option Type", ["Call", "Put"])
+    #     exercise_price = st.sidebar.slider("Exercise Price", 0.0, 500.0, 100.0, 1.0)
+    #     time_to_maturity = st.sidebar.slider("Time To Maturity(Years)", 0.1, 2.0, 1.0, 0.1)
+    #     risk_free_rate = st.sidebar.slider("Risk Free Rate(%)", 0, 10, 5, 1)
+    #     volatility = st.sidebar.slider("Volatility(%)", 0, 100, 20, 1)
+    #     div_yield = st.sidebar.slider("Dividend Yield(%)", 0, 20, 5, 1)     
+   
         
-        model = BlackScholesModel(S, exercise_price, volatility/100, time_to_maturity, risk_free_rate/100, div_yield=div_yield/100, option_type=option_type)
-        st.write(f"The {option_type} Option Price is: ${model.option_value()}")
+    #     stock_data = StockData()
         
-        # st.pyplot(plt)
+    #     self.validate_stock_ticker(stock_data, stock_ticker)
+        
+    #     S = stock_data.get_stock_price(stock_ticker)
+        
+    #     # st.write("You have selected the following parameters:")
+    #     st.write(f"{stock_ticker.upper()} live price: ${S}")
+    #     # st.write(f"Stock Price: {S}")
+    #     # st.write(f"Option Type: {option_type}")
+    #     # st.write(f"Exercise Price: {exercise_price}")
+    #     # st.write(f"Time To Maturity: {time_to_maturity}")
+    #     # st.write(f"Risk Free Rate: {risk_free_rate}")
+    #     # st.write(f"Volatility: {volatility}")
+    #     # st.write(f"Dividend Yield: {div_yield}")
+        
+    #     model = BlackScholesModel(S, exercise_price, volatility/100, time_to_maturity, risk_free_rate/100, div_yield=div_yield/100, option_type=option_type)
+    #     greeks = model.calculate_greeks()
+    #     st.write(f"The {option_type} Option Price is: ${model.option_value()}")
+    #     st.write(f"Delta: {greeks['Delta']}")
+    #     st.write(f"Gamma: {greeks['Gamma']}")
+    #     st.write(f"Theta: {greeks['Theta']}")
+    #     st.write(f"Vega: {greeks['Vega']}")
+    #     st.write(f"Rho: {greeks['Rho']}")
+        
+    #     # st.pyplot(plt)
         
     def validate_numerical_input(self, inputs):
         outputs = []
