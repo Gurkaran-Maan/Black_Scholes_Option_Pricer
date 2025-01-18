@@ -13,8 +13,6 @@ class StockData():
         start = dt.datetime(2024, 10, 24)
         end = dt.datetime.now()
         
-        # data = web.DataReader(ticker, 'yahoo', start, end)
-        
         ticker = yf.Ticker(ticker)
         
         return ticker.history(period="1d", interval="1m").iloc[-1]['Close']

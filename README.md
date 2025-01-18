@@ -1,6 +1,6 @@
 # Black_Scholes_Option_Pricer
 
-![alt text](Images_For_README\Dashboard.png)
+![alt text](Images_For_README/Dashboard.png)
 
 This dashboard is able to calculate the live risk free prices for european call and put options, using the Black-Scholes Option Pricing Model. The user can enter the ticker of their desired stock, e.g $AAPL, and the live price is then pulled in from Yahoo Finance.
 
