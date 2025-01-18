@@ -1,5 +1,10 @@
 # Black_Scholes_Option_Pricer
-A european call and put option pricing algorithm using the Black Scholes Model.
+
+![alt text](Images_For_README\Dashboard.png)
+
+This dashboard is able to calculate the live risk free prices for european call and put options, using the Black-Scholes Option Pricing Model. The user can enter the ticker of their desired stock, e.g $AAPL, and the live price is then pulled in from Yahoo Finance.
+
+'The Greeks' generated from the Black-Scholes model are also very useful as they allow the us to view the rate of change of the optino price given changes to underlying variable, such as the risk-free rate. The greeks are calculated by solving the Black-Scholes equation for call and put options, respectively. The results of which are shown below:
 
 ## Delta
 Delta is the first derivative of option price with respect to underlying price S. The formulas for call and put option delta are the following:
